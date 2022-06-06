@@ -14,7 +14,7 @@ comment on eachothers development activities.
      -[Landing page and create new](TBD)
      - [Schema and updating](TBD)
      - [During the presentation](TBD)
-- Architecture: [Google Drawing](TBD)
+- Architecture: [Figma Board](https://www.figma.com/file/Dw84z07FbnvtrNmUqBYCdh/Project-3-Resources?node-id=0%3A1)
 ### Time/Priority Matrix
 | Component | Priority | Estimated Time | Actual Time |
 | --- | :---: |  :---: | :---: |
