@@ -18,8 +18,7 @@ comment on eachothers development activities.
 ### Time/Priority Matrix
 | Component | Priority | Estimated Time | Actual Time |
 | --- | :---: |  :---: | :---: |
-
-| Total | H |   |    | 
+| Total | H | 0 | 0  |
 ## MVP/Post-MVP
 ### MVP
 
