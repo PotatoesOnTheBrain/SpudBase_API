@@ -10,7 +10,8 @@ comment on eachothers development activities.
 
 - [Front end git](TBD)
 ### Wireframes and Architecture
-- Wireframes: ![login](https://user-images.githubusercontent.com/20614136/172219847-48edee23-c1c0-4743-9edd-5e32958f4147.png)
+- Wireframes: 
+![login](https://user-images.githubusercontent.com/20614136/172226546-37b14ece-8cec-4602-811d-b4695eb4ac82.png)
 ![profile](https://user-images.githubusercontent.com/20614136/172219874-13f70d19-8eff-442b-b69f-cabb2d384936.png)
 ![conversation](https://user-images.githubusercontent.com/20614136/172219894-c2042f30-7087-477a-9c19-52c693f2d89e.png)
 ![theteam](https://user-images.githubusercontent.com/20614136/172219915-64d23d61-ee11-4442-829b-8d1cf19e8c48.png)
