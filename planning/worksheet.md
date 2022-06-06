@@ -21,25 +21,25 @@ comment on eachothers development activities.
 
 ![Time (-5 - +5) and Priority (-5 - +5)](https://user-images.githubusercontent.com/20614136/172224250-b486d1c9-c221-4909-85ae-3eb6e558a7a4.png)
 
-| Component | Priority | Estimated Time | Actual Time |
+| Component | Estimated Time | Priority | Actual Time |
 | :--- | :---: |  :---: | :---: |
-| Login Page | 2 | 10 | x |
-|Profile Page|10|10|x|
-|Convo Page|6|10|x|
-|Team Page|4|10|x|
-|Styling and CSS|8|7|x|
-|Integrate Oauth Login|5|10|x|
-|Group Message|7|3|x|
-|Followers / Following Pages|8|4|x|
-|Individual Repo Page|6|2|x|
-|Editable Bio|3|1|x|
-|Hamburger Menu|3|4|x|
-|Searchbar|5|10|x|
-|Crud Operations|7|10|x|
-|Heroku / Mongo Atlas DB|4|10|x|
-|React|10|10|x|
-|Express|5|10|x|
-| Total | H | 0 | 0  |
+| Login Page | 2 | H | x |
+|Profile Page|10|H|x|
+|Convo Page|6|H|x|
+|Team Page|4|H|x|
+|Styling and CSS|8|M|x|
+|Integrate Oauth Login|5|H|x|
+|Group Message|7|L|x|
+|Followers / Following Pages|8|L|x|
+|Individual Repo Page|6|L|x|
+|Editable Bio|3|L|x|
+|Hamburger Menu|3|L|x|
+|Searchbar|5|H|x|
+|Crud Operations|7|H|x|
+|Heroku / Mongo Atlas DB|4|H|x|
+|React|10|H|x|
+|Express|5|H|x|
+| Total | 0 | H | 0  |
 
 ## MVP/Post-MVP
 ### MVP
