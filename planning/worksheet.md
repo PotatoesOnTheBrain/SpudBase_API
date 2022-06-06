@@ -22,7 +22,8 @@ comment on eachothers development activities.
 ![Time (-5 - +5) and Priority (-5 - +5)](https://user-images.githubusercontent.com/20614136/172224250-b486d1c9-c221-4909-85ae-3eb6e558a7a4.png)
 
 | Component | Priority | Estimated Time | Actual Time |
-|Login Page|2|10|x|
+| :--- | :---: |  :---: | :---: |
+| Login Page | 2 | 10 | x |
 |Profile Page|10|10|x|
 |Convo Page|6|10|x|
 |Team Page|4|10|x|
@@ -38,8 +39,8 @@ comment on eachothers development activities.
 |Heroku / Mongo Atlas DB|4|10|x|
 |React|10|10|x|
 |Express|5|10|x|
-| --- | :---: |  :---: | :---: |
 | Total | H | 0 | 0  |
+
 ## MVP/Post-MVP
 ### MVP
 
