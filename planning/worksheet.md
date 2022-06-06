@@ -43,14 +43,31 @@ comment on eachothers development activities.
 
 ## MVP/Post-MVP
 ### MVP
+Login Page
+Profile Page
+Convo Page
+Team Page
+Integrate Oauth Login
+Searchbar
+Crud Operations
+Heroku / Mongo Atlas DB
+React
+Express
 
 
 ### Post-MVP
-
+Styling and CSS
+Group Messages
+Followers / Following Pages
+Individual Repo Page
+Editable Bio
+Hamburger Menu
 
 ## Components - Descriptions
-
-
+Profile - displays information about a given github user
+Login - allows user to log in with their github credentials via Oauth
+Messages - allows user to see messages and send messages
+TheTeam - shows information about our team
 
 ## Additional Libraries / Technologies Used
 
