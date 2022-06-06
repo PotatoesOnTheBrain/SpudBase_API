@@ -1,4 +1,4 @@
-# Best Timer Ever ⏱️
+# SpudBase
 ## Description
 
 Spudbase is a community for developers. It is directly integrated with GitHub. User accounts exists without ever having to sign up. Users can interact and 
