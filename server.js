@@ -13,9 +13,6 @@ app.get("/", (req, res) => {
     res.send("You've found the server!")
 });
 
-const sessionRouter = require("./controllers/sessionRoutes");
-app.use("/session/", sessionRouter);
-
 const messageRouter = require('./controllers/messageRoutes')
 app.use('/message/', messageRouter);
 
