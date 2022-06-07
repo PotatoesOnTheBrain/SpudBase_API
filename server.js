@@ -16,6 +16,9 @@ app.get("/", (req, res) => {
 const sessionRouter = require("./controllers/sessionRoutes");
 app.use("/session/", sessionRouter);
 
+const messageRouter = require('./controllers/messageRoutes')
+app.use('/message/', messageRouter);
+
 app.listen(app.get('port'), () => {
     console.log("Listening on port", app.get('port'));
 });
