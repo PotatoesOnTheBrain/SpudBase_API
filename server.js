@@ -16,6 +16,9 @@ app.get("/", (req, res) => {
 const messageRouter = require('./controllers/messageRoutes')
 app.use('/message/', messageRouter);
 
+const oAuthRouter = require('./controllers/oAuthRoutes.js')
+app.use('/oauth/', oAuthRouter);
+
 app.listen(app.get('port'), () => {
     console.log("Listening on port", app.get('port'));
 });
