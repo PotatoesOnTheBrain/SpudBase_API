@@ -19,6 +19,10 @@ app.use('/message/', messageRouter);
 const oAuthRouter = require('./controllers/oAuthRoutes.js')
 app.use('/oauth/', oAuthRouter);
 
+const userRouter= require('./controllers/userRoutes')
+app.use('/user/', userRouter)
+
+
 app.listen(app.get('port'), () => {
     console.log("Listening on port", app.get('port'));
 });
