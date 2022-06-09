@@ -55,7 +55,6 @@ router.delete('/:session_id/:message_id', (req, res)=>{
     let session = {}
     Session.findOne({session_id: req.params.session_id})
     .then(foundSession => {
-        console.log("/delete foundSession", foundSession)
         if (!foundSession) {
             return Promise.reject({error: "invalid session id"})
         }
