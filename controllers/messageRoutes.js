@@ -6,12 +6,14 @@ const Session = require("../models/Session");
 const Message = require('../models/Message');
 
 router.get("/:session_id", (req, res) => {
+    let session = {}
     // get userid by session_id
     Session.findOne({session_id: req.params.session_id})
         .then(foundSession => {
             if (!foundSession) {
                 return Promise.reject({error: "invalid session id"})
             }
+            session = foundSession
             return Message.find({
                 $or:[
                     {author: foundSession.user_id},
@@ -20,7 +22,22 @@ router.get("/:session_id", (req, res) => {
             })
         })
         .then(messages => {
-            res.json({messages: messages});
+            let newMessages = messages.map((value)=>{
+                let newMessage = {
+                    author:value.author,
+                    receivers:value.receivers,
+                    subject:value.subject,
+                    body:value.body,
+                    _id:value._id,
+                    canDelete: (session.user_id === value.author)
+                }
+                return newMessage
+            })
+
+            // for (message of messages){
+            //     message.canDelete = (session.user_id === message.author)
+            // }
+            res.json({messages:newMessages});
         })
         .catch(error => {
             console.log(error)
