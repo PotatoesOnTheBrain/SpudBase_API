@@ -51,7 +51,7 @@ router.post('/:session_id', (req, res)=>{
         })
 })
 
-router.delete('/:session_id/:id', (req, res)=>{
+router.delete('/:session_id/:message_id', (req, res)=>{
     let session = {}
     Session.findOne({session_id: req.params.session_id})
     .then(foundSession => {
@@ -60,7 +60,7 @@ router.delete('/:session_id/:id', (req, res)=>{
             return Promise.reject({error: "invalid session id"})
         }
         session = foundSession
-        return Message.findById(req.params.id)
+        return Message.findById(req.params.message_id)
     })
     .then(messageToDelete => {
         if (!messageToDelete) {
@@ -69,7 +69,7 @@ router.delete('/:session_id/:id', (req, res)=>{
         if (messageToDelete.author !== session.user_id) {
             return Promise.reject({error: "insufficient authority, author of requested message does not match current user"})
         }
-        return Message.findByIdAndDelete(req.params.id)
+        return Message.findByIdAndDelete(req.params.message_id)
     })
     .then(deletedMessage => {
         if (!deletedMessage) {
