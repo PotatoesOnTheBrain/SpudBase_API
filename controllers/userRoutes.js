@@ -9,7 +9,7 @@ router.post('/userinfo',(req,res)=> {
         if (!foundSession) {
             return Promise.reject({error: "invalid session id"})
         }
-        return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${session.access_token}`}})
+        return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${foundSession.access_token}`}})
     })
     .then(response => {
         if(!response.data) {
