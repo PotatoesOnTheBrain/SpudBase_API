@@ -4,16 +4,17 @@ const axios = require("axios");
 const Session = require('../models/Session')
 
 router.post('/userinfo',(req,res)=> {
-    console.log(req.body.session_id)
-
     Session.findOne({session_id: req.body.session_id})
-    .then(session => {
-        console.log("session = ", session)
-        console.log("session.access_token = ", session.access_token);
-        return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${session.access_token}`}})
+    .then(foundSession => {
+        if (!foundSession) {
+            return Promise.reject({error: "invalid session id"})
+        }
+        return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${foundSession.access_token}`}})
     })
     .then(response => {
-        console.log("response.data =", response.data)
+        if(!response.data) {
+            return Promise.reject({error: "failure to fetch response data from github api"})
+        }
         res.json(response.data)
     })
     .catch(error => {
@@ -21,7 +22,6 @@ router.post('/userinfo',(req,res)=> {
         res.send(error)
     })
 })
-
 
 /*
 promiseReturningFunction()
