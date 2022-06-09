@@ -43,7 +43,7 @@ router.get("/authorize", (req, res) => {
         })
         .catch(error => {
             console.log(error)
-            res.json(e)
+            res.json(error)
         })
 })
 
