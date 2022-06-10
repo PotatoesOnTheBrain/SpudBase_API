@@ -4,6 +4,7 @@ const router = express.Router();
 const Session = require("../models/Session");
 
 const Message = require('../models/Message');
+const { findByIdAndUpdate, update } = require("../models/Message");
 
 router.get("/:session_id", (req, res) => {
     let session = {}
@@ -41,7 +42,7 @@ router.get("/:session_id", (req, res) => {
         })
         .catch(error => {
             console.log(error)
-            res.json(error)
+            res.send(error)
         })
 })
 
@@ -97,10 +98,42 @@ router.delete('/:session_id/:message_id', (req, res)=>{
         console.log(error);
         res.send(error);
     })
+})
+
+router.patch("/:session_id/:message_id", (req, res) => {
+    let session = {}
+    Session.findOne({session_id: req.params.session_id})
+    .then(foundSession => {
+        if (!foundSession) {
+            return Promise.reject({error: "invalid session id"})
+        }
+        session = foundSession;
+        return Message.findById(req.params.message_id)
+    })
+    .then(messageToUpdate => {
+        if(!messageToUpdate) {
+            return Promise.reject({error: "unable to find message with that id"})
+        }
+        if(messageToUpdate.author !== session.user_id) {
+            return Promise.reject({error: "insuficient authority, author of requested message does not match current user"})
+        }
+        return Message.findByIdAndUpdate(req.params.message_id, {body: req.body.body}, {new: true})
+    })
+    .then(updatedMessage => {
+        if(!updatedMessage) {
+            return Promise.reject({error: "unable to update message at this time, please try again later"})
+        }
+        res.json({updatedMessage: updatedMessage})
+    })
+    .catch(error => {
+        console.log(error);
+        res.send(error);
+    })
+})
 // Message.findByIdAndDelete(req.params.id)
 // .then(deletedMessage =>{
 //     res.json(deletedMessage)
 // })
-})
+
 
 module.exports = router;
