@@ -1,44 +1,39 @@
 const express = require("express");
 const router = express.Router();
 
-const Session = require("../models/Session");
-
+const User = require("../models/User");
 const Message = require('../models/Message');
-const { findByIdAndUpdate, update } = require("../models/Message");
 
 router.get("/:session_id", (req, res) => {
-    let session = {}
+    let user = {}
     // get userid by session_id
-    Session.findOne({session_id: req.params.session_id})
-        .then(foundSession => {
-            if (!foundSession) {
+    User.findOne({session_id: req.params.session_id})
+        .then(foundUser => {
+            if (!foundUser) {
                 return Promise.reject({error: "invalid session id"})
             }
-            session = foundSession
+            user = foundUser
             return Message.find({
                 $or:[
-                    {author: foundSession.user_id},
-                    {receivers: foundSession.user_id}
+                    {author: foundUser.user_id},
+                    {receivers: foundUser.user_id}
                 ]
             })
         })
-        .then(messages => {
-            let newMessages = messages.map((value)=>{
+        .then(messageResults => {
+            let messages = messageResults.map((value)=>{
                 let newMessage = {
-                    author:value.author,
-                    receivers:value.receivers,
-                    subject:value.subject,
-                    body:value.body,
-                    _id:value._id,
-                    canDelete: (session.user_id === value.author)
+                    author: value.author,
+                    receivers: value.receivers,
+                    subject: value.subject,
+                    body: value.body,
+                    creation_date: value.creation_date,
+                    _id: value._id,
+                    canDelete: (user.user_id === value.author)
                 }
                 return newMessage
             })
-
-            // for (message of messages){
-            //     message.canDelete = (session.user_id === message.author)
-            // }
-            res.json({messages:newMessages});
+            res.json({messages:messages});
         })
         .catch(error => {
             console.log(error)
@@ -47,13 +42,13 @@ router.get("/:session_id", (req, res) => {
 })
 
 router.post('/:session_id', (req, res)=>{
-    Session.findOne({session_id: req.params.session_id})
-        .then(foundSession => {
-            if (!foundSession) {
+    User.findOne({session_id: req.params.session_id})
+        .then(foundUser => {
+            if (!foundUser) {
                 return Promise.reject({error: "invalid session id"})
             }
             const newMessage = {
-                author: foundSession.user_id,
+                author: foundUser.user_id,
                 receivers: req.body.receivers,
                 subject: req.body.subject,
                 body: req.body.body

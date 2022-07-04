@@ -3,51 +3,66 @@ const axios = require("axios");
 const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
+const User = require("../models/User");
 
-const Session = require("../models/Session");
+/* GET /authorize
+Endpoint for OAuth authorization for Spudbase client. Redirect URL points to web: Spudbase.com
+*/
 
 router.get("/authorize", (req, res) => {
-    let session = {};
+    // create user variable to later store reference to User instance
+    let user = {};
+
+    //attempt authorization through Github using client_id, client_secret, and the code from the oauth login process
     axios.get(`https://github.com/login/oauth/access_token?code=${req.query.code}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`, {headers: {Accept: "application/json"}})
         .then(ires => {
+            // if we don't get response data, send back an error to front end
             if(!ires.data) {
                 return Promise.reject({error: "failure to fetch response data from github api"})
             }
+            // if we get an error, send it to front end
             if (ires.data.error) {
                 return Promise.reject({error: ires.data.error});
-            }else {
+            }else { // if all is well
+                //generate unique UUID standard session_id
                 let session_id = uuidv4();
-                return (Session.create({
+                // Return promise to create a new User linking the session_id with the access_token
+                return (User.create({
                     session_id: session_id,
-                    access_token: ires.data.access_token
+                    access_token: ires.data.access_token,
+                    last_login: Date.now()
                 }))
             }
         })
-        .then(newSession => {
-            if (!newSession) {
-                return Promise.reject({error: "Failure to create new session, please clear cookies and try again"})
+        .then(newUser => {
+            if (!newUser) {
+                return Promise.reject({error: "Failure to create new user session, please clear cookies and try again"})
             }
-            session = newSession
-            res.json({session_id: session.session_id})
-            return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${session.access_token}`}})
+            //store local reference to the new user for later use.
+            user = newUser
+            return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${user.access_token}`}})
         })
         .then(response => {
-            //TODO handle failure to get userdata after session creation
             if (!response) {
-                console.log("failed to associate session_id with user_id")
-                return;
+                return Promise.reject({error: "Failure to retrieve userInfo with access_token"});
             }
-            session.user_id = response.data.login;
-            session.save();
+            user.user_name = response.data.login;
+            user.user_id = response.data.id;
+            user.save();
+            res.json({session_id: user.session_id})
         })
         .catch(error => {
-            console.log(error)
-            res.json(error)
+            console.log(error);
+            res.json(error);
         })
 })
 
+/* GET /authorize
+Endpoint for OAuth authorization for Spudbase client. Redirect URL points to app: spudbase://
+*/
+
 router.get("/authorizemobile", (req, res) => {
-    let session = {};
+    let user = {};
     axios.get(`https://github.com/login/oauth/access_token?code=${req.query.code}&client_id=${process.env.MOBILE_ID}&client_secret=${process.env.MOBILE_SECRET}`, {headers: {Accept: "application/json"}})
         .then(ires => {
             if(!ires.data) {
@@ -57,32 +72,33 @@ router.get("/authorizemobile", (req, res) => {
                 return Promise.reject({error: ires.data.error});
             }else {
                 let session_id = uuidv4();
-                return (Session.create({
+                return (User.create({
                     session_id: session_id,
-                    access_token: ires.data.access_token
+                    access_token: ires.data.access_token,
+                    auth_token_acquired: Date.now(),
+                    last_login: Date.now()
                 }))
             }
         })
-        .then(newSession => {
-            if (!newSession) {
-                return Promise.reject({error: "Failure to create new session, please clear cookies and try again"})
+        .then(newUser => {
+            if (!newUser) {
+                return Promise.reject({error: "Failure to create new user session, please clear cookies and try again"})
             }
-            session = newSession
-            res.json({session_id: session.session_id})
-            return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${session.access_token}`}})
+            user = newUser
+            return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${user.access_token}`}})
         })
         .then(response => {
-            //TODO handle failure to get userdata after session creation
             if (!response) {
-                console.log("failed to associate session_id with user_id")
-                return;
+                return Promise.reject({error: "Failure to retrieve userInfo with access_token"});
             }
-            session.user_id = response.data.login;
-            session.save();
+            user.user_name = response.data.login;
+            user.user_id = response.data.id;
+            user.save();
+            res.json({session_id: user.session_id})
         })
         .catch(error => {
-            console.log(error)
-            res.json(error)
+            console.log(error);
+            res.json(error);
         })
 })
 
