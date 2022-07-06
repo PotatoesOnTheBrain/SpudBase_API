@@ -35,20 +35,14 @@ router.post("/", (req, res) => {
         res.status(401).json({errorString: "missing header: Authorization",errorCode: 401})
         return
     }
-    User.find({session_id: req.header("Authorization")})
+    User.find({session_id: req.header("Authorization")}).populate("conversations")
         .then(foundUser => {
             if(foundUser == false) {
                 return Promise.reject({errorString: "invalid session_id: log in again",errorCode: 404})
             }
-            return Conversation.create({messages: [], users: [...req.body.users, foundUser.user_id]})
-        })
-        .then(createdConvo => {
-            if(createdConvo == false) {
-                return Promise.reject({errorString: "Unable to create conversation",errorCode: 500})
-            }
-            res.status(200).json(createdConvo);
         })
         .catch(error => {
+            console.log(error)
             if (error.errorCode) {
                 res.status(errorCode).json(error)
             } else {

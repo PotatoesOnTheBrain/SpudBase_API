@@ -49,11 +49,15 @@ router.get("/authorize", (req, res) => {
             user.user_name = response.data.login;
             user.user_id = response.data.id;
             user.save();
-            res.json({session_id: user.session_id})
+            res.status(200).json({session_id: user.session_id, user_name: user.user_name, user_id: user.user_id})
         })
         .catch(error => {
-            console.log(error);
-            res.json(error);
+            console.log(error)
+            if (error.errorCode) {
+                res.status(error.errorCode).json(error)
+            } else {
+                res.status(500).json({errorString: "internal error: contact administrator",errorCode: 500})
+            }
         })
 })
 
@@ -65,7 +69,7 @@ router.get("/authorizemobile", (req, res) => {
     let user = {};
     axios.get(`https://github.com/login/oauth/access_token?code=${req.query.code}&client_id=${process.env.MOBILE_ID}&client_secret=${process.env.MOBILE_SECRET}`, {headers: {Accept: "application/json"}})
         .then(ires => {
-            if(!ires.data) {
+            if(ires.data == false) {
                 return Promise.reject({error: "failure to fetch response data from github api"})
             }
             if (ires.data.error) {
@@ -81,24 +85,28 @@ router.get("/authorizemobile", (req, res) => {
             }
         })
         .then(newUser => {
-            if (!newUser) {
+            if (newUser == false) {
                 return Promise.reject({error: "Failure to create new user session, please clear cookies and try again"})
             }
             user = newUser
             return axios.get("https://api.github.com/user", {headers:{Accept: "application/json", Authorization: `token ${user.access_token}`}})
         })
         .then(response => {
-            if (!response) {
+            if (response == false) {
                 return Promise.reject({error: "Failure to retrieve userInfo with access_token"});
             }
             user.user_name = response.data.login;
             user.user_id = response.data.id;
             user.save();
-            res.json({session_id: user.session_id})
+            res.status(200).json({session_id: user.session_id, user_name: user.user_name, user_id: user.user_id})
         })
         .catch(error => {
-            console.log(error);
-            res.json(error);
+            console.log(error)
+            if (error.errorCode) {
+                res.status(error.errorCode).json(error)
+            } else {
+                res.status(500).json({errorString: "internal error: contact administrator",errorCode: 500})
+            }
         })
 })
 

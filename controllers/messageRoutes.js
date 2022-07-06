@@ -2,65 +2,85 @@ const express = require("express");
 const router = express.Router();
 
 const User = require("../models/User");
-const Message = require('../models/Message');
+const Message = require("../models/Message");
+const Conversation = require("../models/Conversation");
 
-router.get("/:session_id", (req, res) => {
+router.get('/:conversation_id', (req, res)=>{
     let user = {}
-    // get userid by session_id
-    User.findOne({session_id: req.params.session_id})
+    if (req.header("Authorization") == false) {
+        res.status(401).json({errorString: "missing header: Authorization",errorCode: 401})
+        return
+    }
+    User.findOne({session_id: req.header("Authorization")})
         .then(foundUser => {
-            if (!foundUser) {
-                return Promise.reject({error: "invalid session id"})
+            if (foundUser == false) {
+                return Promise.reject({errorString: "invalid session_id: log in again",errorCode: 404})
             }
             user = foundUser
-            return Message.find({
-                $or:[
-                    {author: foundUser.user_id},
-                    {receivers: foundUser.user_id}
-                ]
-            })
+            Conversation.find({_id: req.params.conversation_id}).populate("messages")
         })
-        .then(messageResults => {
-            let messages = messageResults.map((value)=>{
-                let newMessage = {
-                    author: value.author,
-                    receivers: value.receivers,
-                    subject: value.subject,
-                    body: value.body,
-                    creation_date: value.creation_date,
-                    _id: value._id,
-                    canDelete: (user.user_id === value.author)
-                }
-                return newMessage
-            })
-            res.json({messages:messages});
+        .then(foundConversation => {
+            if (foundConversation == false) {
+                return Promise.reject({errorString: "invalid conversation id",errorCode: 404})
+            }
+            if (foundConversation.users.includes(user) == false) {
+                return Promise.reject({errorString: "forbidden: user may not access this conversation",errorCode: 403})
+            }
+            res.status(200).json(foundConversation)
         })
         .catch(error => {
             console.log(error)
-            res.send(error)
+            if (error.errorCode) {
+                res.status(error.errorCode).json(error)
+            }
+            res.status(500).json({errorString: "internal error: contact administrator",errorCode: 500})
         })
 })
 
-router.post('/:session_id', (req, res)=>{
-    User.findOne({session_id: req.params.session_id})
+router.post('/:conversation_id', (req, res)=>{
+    let user = {}
+    let conversation = {}
+    if (req.header("Authorization") == false) {
+        res.status(401).json({errorString: "missing header: Authorization",errorCode: 401})
+        return
+    }
+    User.findOne({session_id: req.header("Authorization")})
         .then(foundUser => {
-            if (!foundUser) {
-                return Promise.reject({error: "invalid session id"})
+            if (foundUser == false) {
+                return Promise.reject({errorString: "invalid session_id: log in again",errorCode: 404})
+            }
+            user = foundUser
+            Conversation.find({_id: req.params.conversation_id})
+        })
+        .then(foundConversation => {
+            if (foundConversation == false) {
+                return Promise.reject({errorString: "invalid conversation id",errorCode: 404})
+            }
+            conversation = foundConversation
+            if (conversation.users.includes(user) == false) {
+                return Promise.reject({errorString: "forbidden: user may not access this conversation",errorCode: 403})
             }
             const newMessage = {
-                author: foundUser.user_id,
-                receivers: req.body.receivers,
-                subject: req.body.subject,
-                body: req.body.body
+                author: user.user_id,
+                body: req.body.body,
+                conversation: conversation
             }
-            return Message.create(newMessage);
+            return Messsage.create(newMessage)
         })
         .then(newMessage => {
-            res.json(newMessage)
+            if (newMessage == false) {
+                return Promise.reject({errorString: "bad message body: verify format and try again",errorCode: 400})
+            }
+            conversation.messages.push(newMessage)
+            conversation.save()
+            res.status(200).json(conversation)
         })
         .catch(error => {
-            console.log(error);
-            res.send(error);
+            console.log(error)
+            if (error.errorCode) {
+                res.status(error.errorCode).json(error)
+            }
+            res.status(500).json({errorString: "internal error: contact administrator",errorCode: 500})
         })
 })
 
@@ -125,10 +145,6 @@ router.patch("/:session_id/:message_id", (req, res) => {
         res.send(error);
     })
 })
-// Message.findByIdAndDelete(req.params.id)
-// .then(deletedMessage =>{
-//     res.json(deletedMessage)
-// })
 
 
 module.exports = router;

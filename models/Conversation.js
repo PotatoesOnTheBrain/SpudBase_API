@@ -4,6 +4,7 @@ const User = require("./User.js");
 
 const ConversationSchema = new mongoose.Schema({
     users: [User],
+    usernames: String,
     messages: [Message],
     creation_date: {type: Date, default: Date.now()}
 })
